@@ -28,6 +28,8 @@ services:
       PORT: 5050
     ports:
     - "${HOST_BIND_IP}:5050:5050"
+    entrypoint: >
+      bash -c "pip install --upgrade edge-tts && python3 /app/server.py"
   api_app:
     image: langapp-language-api:latest
     container_name: langapp_backend_instance
