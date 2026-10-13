@@ -90,6 +90,11 @@ export function UserPage() {
                     </div>
                     <div className="form-row">
                         <div className="form-label-cell">
+                            <label className="form-label">Blind Bucket Exercises: <input type="checkbox" disabled={true} checked={record?.blindBucketExercises} /></label>
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-label-cell">
                             <label className="form-label">Number of Exercises to Generate: {record?.numOfExercisesToGenerate}</label>
                         </div>
                     </div>

@@ -709,6 +709,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
 
+                    b.Property<bool>("BlindBucketExercises")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime?>("ConfirmationEmailSent")
                         .HasColumnType("datetime(6)");
 

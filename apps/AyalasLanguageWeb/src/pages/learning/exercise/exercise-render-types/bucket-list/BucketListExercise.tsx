@@ -127,7 +127,12 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     setBucketList([...bucketList, itemValue]);
     const tmpAnswerList = answerList.filter((_, ind) => ind !== position);
     setAnswerList(tmpAnswerList);
-    setHasAnswer(tmpAnswerList.length > 0);
+    if (user?.blindBucketExercises) {
+      setHasAnswer(tmpAnswerList.length > 0);
+    }
+    else {
+      setHasAnswer(tmpAnswerList.length == exerciseInfo.answers?.length);
+    }
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
@@ -144,12 +149,19 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
       setAnswerList([itemValue]);
       checkAnswerInternal([itemValue]);
+      setHasAnswer(true);
     }
     else {
       setBucketList(bucketList.filter((_, ind) => ind !== position));
-      setAnswerList([...answerList, itemValue]);
+      const tmpAnswerList = [...answerList, itemValue];
+      setAnswerList(tmpAnswerList);
+      if (user?.blindBucketExercises) {
+        setHasAnswer(true);
+      }
+      else {
+        setHasAnswer(tmpAnswerList.length == exerciseInfo.answers?.length);
+      }
     }
-    setHasAnswer(true);
   }
 
   const isRTL = isRightToLeftInput(

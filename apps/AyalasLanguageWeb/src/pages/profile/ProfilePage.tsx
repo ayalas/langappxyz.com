@@ -22,6 +22,7 @@ export function ProfilePage() {
   const [error, setError] = useState('');
   const [disableAutoAI, setDisableAutoAI] = useState(false);
   const [showOnlyPrivateContent, setShowOnlyPrivateContent] = useState(false);
+  const [blindBucketExercises, setBlindBucketExercises] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
   const targetLanguageRef = useRef<HTMLSelectElement>(null);
@@ -46,6 +47,8 @@ export function ProfilePage() {
         if (user.showOnlyPrivateContent) {
           setShowOnlyPrivateContent(true);
         }
+
+        setBlindBucketExercises(user.blindBucketExercises);
 
         if (user.languageSettings) {
           if (user.languageSettings.targetLanguageId && user.languageSettings.targetLanguageId > 0) {
@@ -100,7 +103,8 @@ export function ProfilePage() {
         showOnlyPrivateContent,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
-        KnownLanguageId: Number(knownLanguage)
+        KnownLanguageId: Number(knownLanguage),
+        blindBucketExercises
       });
 
       login(res.data);
@@ -178,6 +182,16 @@ export function ProfilePage() {
               <div className="form-input-cell">
                 <input type="checkbox" data-testid="showOnlyPrivateContent" checked={showOnlyPrivateContent} onChange={(e) => setShowOnlyPrivateContent(e.target.checked)} />
               </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-label-cell">
+                <label className="form-label">Tougher Bucket Exercises</label>
+              </div>
+              <div className="form-input-cell">
+                <input type="checkbox" data-testid="blindBucketExercises" checked={blindBucketExercises} onChange={(e) => setBlindBucketExercises(e.target.checked)} />
+              </div>
+              <div className="form-cell-footer">Don't disclose how many extra words are there in a bucket exercise.</div>
             </div>
 
             <div className="form-row">

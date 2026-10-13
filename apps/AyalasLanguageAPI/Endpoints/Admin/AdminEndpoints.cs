@@ -307,7 +307,8 @@ public static class AdminEndpoints
                 u.ForgotEmailSent,
                 u.ForgotEmailReceived, 
                 u.EmailConfirmationReceived,
-                u.ConfirmationEmailSent
+                u.ConfirmationEmailSent,
+                u.BlindBucketExercises
             ))
             .FirstOrDefaultAsync();
     }

@@ -2,7 +2,7 @@ import { useEffect, useState, useImperativeHandle } from 'react';
 import BucketListItem from './BucketListItem';
 import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import type {ExerciseHandle} from '../../Exercise';
+import type { ExerciseHandle } from '../../Exercise';
 import { CirclePlay } from 'lucide-react-native';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
@@ -96,7 +96,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   useEffect(() => {
     async function execAsync() {
-      
+
       if (exerciseInfo && exerciseInfo.exerciseObject != null && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
 
         setFirst(exerciseInfo.exerciseObject.First as string);
@@ -130,7 +130,12 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     setBucketList([...bucketList, itemValue]);
     const tmpAnswerList = answerList.filter((_, ind) => ind !== position);
     setAnswerList(tmpAnswerList);
-    setHasAnswer(tmpAnswerList.length > 0);
+    if (user?.blindBucketExercises) {
+      setHasAnswer(tmpAnswerList.length > 0);
+    }
+    else {
+      setHasAnswer(tmpAnswerList.length == exerciseInfo.answers?.length);
+    }
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
@@ -147,19 +152,26 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
       setAnswerList([itemValue]);
       checkAnswerInternal([itemValue]);
+      setHasAnswer(true);
     }
     else {
       setBucketList(bucketList.filter((_, ind) => ind !== position));
-      setAnswerList([...answerList, itemValue]);
+      const tmpAnswerList = [...answerList, itemValue];
+      setAnswerList(tmpAnswerList);
+      if (user?.blindBucketExercises) {
+        setHasAnswer(true);
+      }
+      else {
+        setHasAnswer(tmpAnswerList.length == exerciseInfo.answers?.length);
+      }
     }
-    setHasAnswer(true);
   }
 
   const isRTL = isRightToLeftInput(
-            exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-        );
+    exerciseInfo.exerciseTypeId,
+    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+  );
 
   return (
     <>
@@ -168,18 +180,18 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
           <View className="form-row-play">
             <View className="form-play-container">
               <View className="play-text"><Text style={styles.exerciseText}>{first}</Text></View>
-            {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
-              <View className="playButtonContainer"><TouchableOpacity testID="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='color-brand-play' /></TouchableOpacity></View>
-            )}</View>
+              {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
+                <View className="playButtonContainer"><TouchableOpacity testID="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='color-brand-play' /></TouchableOpacity></View>
+              )}</View>
           </View>
           {answerList && (
-            <View className={`line-container-wrap ${isRTL ? 
+            <View className={`line-container-wrap ${isRTL ?
               "flex-row-reverse justify-end" : "flex-row justify-start"}`}
               style={{
-                        // Force direction for layout engine (Android/iOS)
-                        direction: isRTL ? 'rtl' : 'ltr' 
-                    }}
-              >
+                // Force direction for layout engine (Android/iOS)
+                direction: isRTL ? 'rtl' : 'ltr'
+              }}
+            >
               {answerList.map((item, i) => (
                 <BucketListItem key={`answer-${i}`} itemValue={item} position={i} isRTL={isRTL} itemClicked={answerListItemClicked} />
               ))}
@@ -199,7 +211,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         <View className="form-row-play">
           <View className="form-play-container"><View className="play-text"><Text style={styles.text}>{second}</Text></View>
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-            <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
+              <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
             )}
           </View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (

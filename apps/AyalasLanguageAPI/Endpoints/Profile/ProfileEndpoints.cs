@@ -49,6 +49,10 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             {
                 user.DisableAutoAI = dto.DisableAutoAI.Value;
             }
+            if (dto.BlindBucketExercises != null)
+            {
+                user.BlindBucketExercises = dto.BlindBucketExercises.Value;
+            }
             if (dto.ShowOnlyPrivateContent != null)
             {
                 user.ShowOnlyPrivateContent = dto.ShowOnlyPrivateContent.Value;

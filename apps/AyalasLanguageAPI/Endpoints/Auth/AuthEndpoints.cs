@@ -323,6 +323,7 @@ public static class AuthEndpoints
                 u.EmailConfirmed,
                 u.Use2FALogin,
                 u.DisableAutoAI,
+                u.BlindBucketExercises,
                 u.ShowOnlyPrivateContent,
                 u.NumOfExercisesToGenerate,
                 u.TargetLanguageId,
@@ -392,6 +393,7 @@ public static class AuthEndpoints
             userData.ShowOnlyPrivateContent,
             userData.NumOfExercisesToGenerate,
             unreadCount,
+            userData.BlindBucketExercises,
             languageSettings
         );
     }

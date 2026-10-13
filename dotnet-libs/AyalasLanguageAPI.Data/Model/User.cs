@@ -29,6 +29,8 @@ namespace AyalasLanguageAPI.Data.Model
 
         public bool Use2FALogin {get; set;} = false;
 
+        public bool BlindBucketExercises {get; set;} = false;
+
         public DateTime? ConfirmationEmailSent {get; set;}
 
         [StringLength(1024)]

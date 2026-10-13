@@ -38,5 +38,6 @@ export interface User {
   showOnlyPrivateContent: boolean;
   numOfExercisesToGenerate?: number;
   unreadMessages: number;
+  blindBucketExercises: boolean;
   languageSettings?: LanguageSettings;
 }

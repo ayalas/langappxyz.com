@@ -117,9 +117,20 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
-            const desc = EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].GenerationInfo?.instruction ?? '';
-            return desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
+            let desc = EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].GenerationInfo?.instruction ?? '';
+            desc =  desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
                 .replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '')
+
+            if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasMultiBucketAnswers) {
+                if (user?.blindBucketExercises) {
+                    desc = desc.replaceAll(PLACEHOLDERS.BUCKET_EXTRA_OPTIONS_PLACEHOLDER, 'some');
+                }
+                else {
+                    desc = desc.replaceAll(PLACEHOLDERS.BUCKET_EXTRA_OPTIONS_PLACEHOLDER, `all but ${exerciseInfo?.extraItems?.length ?? 0}`);
+                }
+            }
+
+            return desc;
         }
         return "";
     }

@@ -45,6 +45,7 @@ describe('ConfirmEmailPage', () => {
     userName: 'test@example.com',
     emailConfirmed: false,
     use2FALogin: false,
+    blindBucketExercises: false,
     showOnlyPrivateContent: false,
     role: ROLE_TYPE.CONTENT_CREATOR,
     disableAutoAI: true,

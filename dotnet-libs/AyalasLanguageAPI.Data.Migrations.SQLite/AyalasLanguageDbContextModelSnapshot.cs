@@ -686,6 +686,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("BlindBucketExercises")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime?>("ConfirmationEmailSent")
                         .HasColumnType("TEXT");
 

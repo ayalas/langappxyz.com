@@ -153,7 +153,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
     }),
 
     [EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET]: createLogic({
-        instruction: `Translate to ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} by selecting some of these words in the right order.`,
+        instruction: `Translate to ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} by selecting ${PLACEHOLDERS.BUCKET_EXTRA_OPTIONS_PLACEHOLDER} of these words in the right order.`,
         description: "Generate sentences in the language you know to translate to the language you are learning from a bucket list.",
         first_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
@@ -221,7 +221,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
     }),
 
     [EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET]: createLogic({
-        instruction: `Translate to ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} by selecting some of these words in the right order.`,
+        instruction: `Translate to ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} by selecting ${PLACEHOLDERS.BUCKET_EXTRA_OPTIONS_PLACEHOLDER} of these words in the right order.`,
         description: "Generate sentences in the language you are learning to translate to the language you know from a bucket list.",
         first_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",

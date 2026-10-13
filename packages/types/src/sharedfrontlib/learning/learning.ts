@@ -7,7 +7,8 @@ export const PLACEHOLDERS = {
     SUBJECT_PLACEHOLDER: "sssubjectsss",
     NUM_OF_EXERCISES_PLACEHOLDER: 'nnnumofexercisesnnn',
     NUM_OF_MATCHES_PLACEHOLDER: 'nnnumofmatchesnnn',
-    NUM_OF_WRONG_OPTIONS_PLACEHOLDER: 'nnnumofwrongoptionsnnn'
+    NUM_OF_WRONG_OPTIONS_PLACEHOLDER: 'nnnumofwrongoptionsnnn',
+    BUCKET_EXTRA_OPTIONS_PLACEHOLDER: 'nnbucketextraoptionsnnn'
 } as const;
 
 export const DEFAULT_NUM_OF_EXERCISES = 10;

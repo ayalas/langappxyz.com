@@ -78,6 +78,7 @@ describe('ProfilePage', () => {
     unreadMessages: 0,
     role: ROLE_TYPE.CONTENT_CREATOR,
     use2FALogin: false,
+    blindBucketExercises: false,
     displayName: "test user",
     languageSettings: {
       targetLanguageId: 2,

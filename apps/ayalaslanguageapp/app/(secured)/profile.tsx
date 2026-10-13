@@ -24,6 +24,7 @@ export default function ProfileScreen() {
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [showOnlyPrivateContent, setShowOnlyPrivateContent] = useState(false);
+  const [blindBucketExercises, setBlindBucketExercises] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const { user, login } = useAuth();
@@ -61,6 +62,8 @@ export default function ProfileScreen() {
         if (user.showOnlyPrivateContent) {
           setShowOnlyPrivateContent(true);
         }
+
+        setBlindBucketExercises(user.blindBucketExercises);
 
         setNumOfExercises(user.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES)
       }
@@ -101,6 +104,7 @@ export default function ProfileScreen() {
       const res = await api.post('/api/profile/', {
         disableAutoAI: null,
         showOnlyPrivateContent,
+        blindBucketExercises,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)
@@ -159,6 +163,16 @@ export default function ProfileScreen() {
             <View className="form-input-row">
               <Checkbox data-testid="showOnlyPrivateContent" value={showOnlyPrivateContent} onValueChange={setShowOnlyPrivateContent} />
               <Text style={styles.text}>Show Only Own Content</Text>
+            </View>
+          </View>
+
+          <View className="form-row">
+            <View className="form-input-row">
+              <Checkbox data-testid="blindBucketExercises" value={blindBucketExercises} onValueChange={setBlindBucketExercises} />
+              <Text style={styles.text}>Tougher Bucket Exercises</Text>
+            </View>
+            <View className="form-input-row">
+              <Text style={styles.dimmedText}>Don't disclose how many extra words are there in a bucket exercise.</Text>
             </View>
           </View>
 

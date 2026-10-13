@@ -32,7 +32,8 @@ export interface IUserDetails extends IRowUser {
     forgotEmailSent?: string,
     forgotEmailReceived?: string,
     emailConfirmationReceived?: string,
-    confirmationEmailSent?: string
+    confirmationEmailSent?: string,
+    blindBucketExercises: boolean
 }
 
 export interface IRowLogin {
