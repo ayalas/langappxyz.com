@@ -97,7 +97,7 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
 
             _cache.Set(cacheKey, session, cacheEntryOptions);
 
-            _ = db.Tokens.Where(t => t.TokenId == tokenRecord.TokenId)
+            await db.Tokens.Where(t => t.TokenId == tokenRecord.TokenId)
                 .ExecuteUpdateAsync(s => s.SetProperty(b => b.LastUsedAt, DateTime.UtcNow));
         }
 

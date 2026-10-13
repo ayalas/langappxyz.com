@@ -25,7 +25,8 @@ namespace AyalasLanguageAPI.Endpoints
 
                 _logger.LogError(ex, "{MethodName}: An unhandled exception occurred.", methodName);
 
-                var db = context.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
+                using var scope = context.HttpContext.RequestServices.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
                 
                 var logData = new
                 {
