@@ -310,7 +310,8 @@ public static class ContentCreatorEndpoints
             LearningPathId = dto.LearningPathId,
             ExerciseTypeId = dto.ExerciseTypeId,
             Data = dto.Data,
-            UserId = userId
+            UserId = userId,
+            OwnershipType = (byte)dto.OwnershipType
         };
 
         db.Exercises.Add(exercise);
