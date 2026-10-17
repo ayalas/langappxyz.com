@@ -15,7 +15,7 @@ COPY --from=node:22-alpine /usr/local/lib /usr/local/lib
 COPY --from=node:22-alpine /usr/local/include /usr/local/include
 COPY --from=node:22-alpine /usr/local/bin /usr/local/bin
 
-RUN npm install -g pnpm turbo
+RUN npm install -g pnpm@11.21.0 turbo
 
 # 3. Copy monorepo configuration (including the NEW mobile app)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
