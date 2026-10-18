@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { FilePenLine, X } from 'lucide-react';
+import { FilePenLine, KeyRound, X } from 'lucide-react';
 
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { Exercise, type ExerciseHandle } from './exercise/Exercise';
@@ -11,6 +11,7 @@ import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type Learni
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { toast } from 'sonner';
 import { PAGE_SIZE } from '../../constants/learning';
+import { OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 export function LessonPage() {
   const { learningPathId } = useParams();
@@ -166,8 +167,8 @@ export function LessonPage() {
 
       const tempExercises = await loadExercises(targetPage, !hasMoreData || page + 1 >= totalPages);
       if (tempExercises && tempExercises.length > 0 && changedPage) {
-          changeCurrentExercise(tempExercises, 0);
-          return;
+        changeCurrentExercise(tempExercises, 0);
+        return;
       }
       else if ((currentExercise.index ?? 0) < tempExercises.length - 1) {
         changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
@@ -277,7 +278,7 @@ export function LessonPage() {
     }
   };
 
-   const restartLesson = async function () {
+  const restartLesson = async function () {
     const firstPageExercises = await loadExercises(1, true);
     if (firstPageExercises && firstPageExercises.length > 0) {
       changeCurrentExercise(firstPageExercises, 0);
@@ -382,7 +383,11 @@ export function LessonPage() {
             {currentExercise && hasData && (
               <>
                 <div className="form-row">
-                  <label className="form-label-row">{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</label>
+                  <label className="form-label-row">{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</label>{
+                    currentExercise && hasData && currentExercise.ownershipType === OWNERSHIP_TYPE.USER && (
+                      <span title="private"><KeyRound className="learning-progress-img" /></span>
+                    )
+                  }
                 </div>
 
                 <Exercise key={currentExercise.exerciseId}

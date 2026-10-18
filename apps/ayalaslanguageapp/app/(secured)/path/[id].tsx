@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, Pressable, Platform, Alert } from 'react-native'
 import { useEffect, useState, useRef } from 'react';
-import { useLocalSearchParams, Link, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import api from '@/lib/api';
-import { FilePenLine } from 'lucide-react-native';
+import { FilePenLine, KeyRound } from 'lucide-react-native';
 
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import Exercise, { type ExerciseHandle } from '@/components/learning/Exercise';
@@ -14,6 +14,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { FormHeader } from '@/components/FormHeader';
 import useTextStyles from '@/lib/useTextStyles';
 import { PAGE_SIZE } from '@/constants';
+import { OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 export default function LessonScreen() {
   const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
@@ -396,8 +397,12 @@ export default function LessonScreen() {
         )}
         {currentExercise && hasData && (
           <>
-            <View className="form-row">
-              <Text style={styles.text}>{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</Text>
+            <View className="lesson-title-container">
+              <Text style={styles.text}>{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</Text>{
+                currentExercise.ownershipType === OWNERSHIP_TYPE.USER && (
+                  <KeyRound width="18" height="18" className="color-brand-key" />
+                )
+              }
             </View>
 
             <Exercise key={currentExercise.exerciseId}

@@ -560,10 +560,10 @@
 
 .form-header {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   padding-top: 5px !important;
-  padding-left: 15px !important;
-  padding-right: 15px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   justify-content: space-between !important;
@@ -674,6 +674,14 @@
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
+}
+
+.lesson-title-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 .logo {
