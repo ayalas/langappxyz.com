@@ -2,11 +2,12 @@ langappxyz.com, www.langappxyz.com {
     tls /langapp-stack/certs/domain.cert.pem /langapp-stack/certs/private.key.pem
 
     reverse_proxy 0.0.0.0:8080
-}
-log {
-    output file /var/log/caddy/access.log {
-        roll_size 1mb    # Roll after 1 megabytes
-        roll_keep 1       # Keep at most 1 old log files
-        roll_keep_for 7d  # Keep logs for 7 days
+
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 1mb
+            roll_keep 1
+            roll_keep_for 7d
+        }
     }
 }
