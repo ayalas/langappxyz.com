@@ -16,6 +16,9 @@ export interface ExerciseInfo {
   access: number;
   learningPathId?: number;
   ownershipType: OwnershipType;
+  sourceExerciseId?: number;
+  sourceExerciseLearningPathId?: number;
+  sourceExerciseLearningPathName?: string;
 }
 
 export interface PagedExercisesRequest

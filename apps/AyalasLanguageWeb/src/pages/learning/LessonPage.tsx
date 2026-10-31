@@ -366,7 +366,7 @@ export function LessonPage() {
             {learningPathData && (
               <>
                 <div className="form-header">
-                  <div className="form-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
+                  <div className="form-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}${ currentExercise && currentExercise.sourceExerciseLearningPathName ? ` (${currentExercise.sourceExerciseLearningPathName})` : '' }`}</div>
                   <div className="form-close-row">
                     <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); saveProgress(true) }} className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</button>
                   </div>

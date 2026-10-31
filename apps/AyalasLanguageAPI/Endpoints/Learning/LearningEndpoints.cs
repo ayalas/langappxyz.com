@@ -353,6 +353,8 @@ public static class LearningEndpoints
 
         //Allow admin to get all exercises (but not create new ones on private lessons)
         var query = db.Exercises
+            .Include(e => e.SourceExercise)
+            .ThenInclude(source => source != null? source.LearningPath: null)
             .Where(e => e.LearningPathId == pathId
             && e.Status != (byte)ContentStatusEnum.Removed).AsQueryable();
 
@@ -375,7 +377,10 @@ public static class LearningEndpoints
         return query.OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
                 isAdmin || e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
-            , e.LearningPathId, (OwnershipTypeEnum)e.OwnershipType));
+            
+            ,e.LearningPathId, (OwnershipTypeEnum)e.OwnershipType, e.SourceExerciseId, e.SourceExercise == null ? null : e.SourceExercise.LearningPathId,
+            e.SourceExercise == null || e.SourceExercise.LearningPath == null ? null :   
+             e.SourceExercise.LearningPath.Name));
     }
     internal static async Task<UserProgress?> GetMistakesLearningPathForUser(int userId, int targetLanguageId, int knownLanguageId, AyalasLanguageDbContext db)
     {

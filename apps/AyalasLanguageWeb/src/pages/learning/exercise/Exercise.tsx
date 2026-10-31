@@ -227,6 +227,13 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
             </div>
             
             <div className="buttons-container">
+                {
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
+                        <div className="form-button-cell">
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
+                        </div>
+                    )
+                }
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
@@ -254,7 +261,10 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     {
                         dataTestId: "edit-lesson",
                         children: <><FilePenLine />&nbsp;Edit lesson</>,
-                        toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                        onClick: () => {  
+                                saveProgress(false);
+                                navigate(`/author/path/${exerciseInfo.learningPathId}`);
+                            }
                     },
                     {
                         dataTestId: "edit-exercise",
@@ -273,13 +283,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                             }
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
-                {
-                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
-                        <div className="form-button-cell">
-                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
-                        </div>
-                    )
-                }
+                
             </div>
             <div className="exercise-footer">
 

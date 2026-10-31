@@ -34,7 +34,7 @@ namespace AyalasLanguageAPI.DTOs
     // Exercise DTOs
     public record PagedExercisesRequest(int? StartExerciseId, int? Page, bool RefreshCount = false);
     public record PagedExercisesResponse(int NumOfRecords, int Page, ExerciseDto[] Data);
-    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId, OwnershipTypeEnum OwnershipType);
+    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId, OwnershipTypeEnum OwnershipType, int? SourceExerciseId, int? SourceExerciseLearningPathId, string? SourceExerciseLearningPathName);
 
     public record NextChapterDto(int Level, decimal ChapterHint);
     

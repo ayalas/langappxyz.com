@@ -244,6 +244,13 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
             </View>
 
             <View className="buttons-container">
+                {
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
+                        <View className="form-button-cell">
+                            <TouchableOpacity testID="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='color-brand-accent' /><Text style={[styles.text, styles.colorAccent]}> {displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
+                        </View>
+                    )
+                }
                 <View className="form-button-cell">
                     <ActionsMenuComponent items={[
                         {
@@ -277,7 +284,11 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         {
                             dataTestId: "edit-lesson",
                             itemText: "Edit lesson",
-                            toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                            onClick: () => {  
+                                saveProgress(false);
+                                router.replace(`/author/path/${exerciseInfo.learningPathId}`);
+
+                            },
                             leadingIcon: (props) => <FilePenLine {...props} className="color-brand-primary" />,
                         },
                         {
@@ -301,13 +312,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         }
                     ] as ActionsMenuItem[]} anchorTitle="More" />
                 </View>
-                {
-                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
-                        <View className="form-button-cell">
-                            <TouchableOpacity testID="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='color-brand-accent' /><Text style={[styles.text, styles.colorAccent]}> {displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
-                        </View>
-                    )
-                }
+                
             </View>
             <View className="exercise-footer">
 

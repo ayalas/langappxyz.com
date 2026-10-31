@@ -385,7 +385,7 @@ export default function LessonScreen() {
         )}
         {learningPathData && (
           <>
-            <FormHeader titleSize='sm' OnPress={() => { saveProgress(true) }} title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
+            <FormHeader titleSize='sm' OnPress={() => { saveProgress(true) }} title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}${ currentExercise && currentExercise.sourceExerciseLearningPathName ? ` (${currentExercise.sourceExerciseLearningPathName})` : '' }`} />
             {!currentExercise && (
               <View className="form-row">
                 <View className="form-button-cell">

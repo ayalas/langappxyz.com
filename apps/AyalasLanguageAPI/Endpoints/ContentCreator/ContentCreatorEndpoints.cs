@@ -341,13 +341,18 @@ public static class ContentCreatorEndpoints
     private static async Task<IResult> GetExercise(int id, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var exercise = await db.Exercises
+        .Include(e => e.SourceExercise)
+            .ThenInclude(source => source != null? source.LearningPath: null)
         .FirstOrDefaultAsync(e => e.ExerciseId == id);
         if (exercise == null) return Results.NotFound();
 
         if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId, (OwnershipTypeEnum)exercise.OwnershipType));
+        return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId, (OwnershipTypeEnum)exercise.OwnershipType,
+        exercise.SourceExerciseId, exercise.SourceExercise == null ? null : exercise.SourceExercise.LearningPathId,
+            exercise.SourceExercise == null || exercise.SourceExercise.LearningPath == null ? null :   
+             exercise.SourceExercise.LearningPath.Name));
     }
 
     private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
