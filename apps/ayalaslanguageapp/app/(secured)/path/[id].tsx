@@ -25,6 +25,7 @@ export default function LessonScreen() {
   const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
   const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
+  const [hadMistake, setHadMistake] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [numOfRecords, setNumOfRecords] = useState(0);
@@ -45,6 +46,7 @@ export default function LessonScreen() {
     const dataObj = safeParseData(raw);
     if (dataObj == null) return;
 
+    setHadMistake(false);
     const targetLang = user?.languageSettings?.targetLanguage || '';
     const firstData = replaceCharsForLanguage(targetLang, dataObj?.First || '') || '';
     const secondData = replaceCharsForLanguage(targetLang, dataObj?.Second || '') || '';
@@ -71,8 +73,7 @@ export default function LessonScreen() {
         exerciseObject: dataObj,
         sentenceElements,
         answers,
-        index,
-        hadMistake: false
+        index
       });
     } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasExtraOptions) {
       const separator = EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].ExtraOptionsSeparator;
@@ -90,8 +91,7 @@ export default function LessonScreen() {
         sentenceElements: [firstData],
         answers: tempAnswers,
         extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
-        index,
-        hadMistake: false
+        index
       });
     } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
       const sentenceElements = (firstData || '').split(',');
@@ -108,8 +108,7 @@ export default function LessonScreen() {
         exerciseObject: dataObj,
         sentenceElements,
         answers,
-        index,
-        hadMistake: false
+        index
       });
     }
     else { //all other types
@@ -118,8 +117,7 @@ export default function LessonScreen() {
         exerciseObject: dataObj,
         sentenceElements: [firstData],
         answers: [secondData],
-        index,
-        hadMistake: false
+        index
       });
     }
   };
@@ -130,7 +128,7 @@ export default function LessonScreen() {
 
   const addMistake = async function (exerciseId: number) {
     try {
-      currentExercise && setCurrentExercise({ ...currentExercise, hadMistake: true });
+      setHadMistake(true);
       await api.post('/api/learning/mistake', { exerciseId });
     } catch (err: unknown) {
       errorHandler(err, setError);
@@ -413,6 +411,7 @@ export default function LessonScreen() {
             <Exercise key={currentExercise.exerciseId}
               ref={setRef}
               exerciseInfo={currentExercise}
+              hadMistake={hadMistake}
               moveNext={moveNext}
               movePrev={movePrev}
               childLoaded={childLoaded}

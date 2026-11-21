@@ -41,7 +41,6 @@ export type ExtendedExerciseInfo = ExerciseInfo & {
   answers?: string[];
   sentenceElements?: string[];
   extraItems?: string[];
-  hadMistake?: boolean;
 };
 
 export type MatchCell = { 

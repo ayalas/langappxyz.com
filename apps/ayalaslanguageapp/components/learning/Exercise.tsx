@@ -32,6 +32,7 @@ export interface ExerciseHandle {
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
+    hadMistake: boolean;
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
@@ -45,7 +46,7 @@ type Props = {
 };
 
 export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress,
-    restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref }: Props) {
+    restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref, hadMistake }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -153,7 +154,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
         }
 
         if (newValue) {
-            if (exerciseInfo && !exerciseInfo.hadMistake) {
+            if (!hadMistake) {
                 confirmRevealAnswer(FinalizeRevealAnswer);
             }
             else {

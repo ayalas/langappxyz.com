@@ -57,13 +57,13 @@ describe('Exercise Component', () => {
         data: JSON.stringify(dataObj),
         sentenceElements: ['Hello'],
         answers: ['Bonjour'],
-        hadMistake: false,
         access: AUTHOR_ACCESS.CAN_EDIT,
         ownershipType: OWNERSHIP_TYPE.PUBLIC
     };
 
     const mockProps = {
         exerciseInfo: info,
+        hadMistake: false,
         moveNext: vi.fn(),
         movePrev: vi.fn(),
         childLoaded: vi.fn(),
@@ -73,7 +73,6 @@ describe('Exercise Component', () => {
         practiseMistakesInitialValue: false,
         addMistake: vi.fn(async (exerciseId: number) => {
             expect(exerciseId).toBe(101);
-            info.hadMistake = true;
         }),
         onPractiseMistakesChange: vi.fn(),
         page: 1,
@@ -91,7 +90,6 @@ describe('Exercise Component', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        info.hadMistake = false;
         (useOutletContext as any).mockReturnValue({ user: mockUser });
     });
 
@@ -101,7 +99,7 @@ describe('Exercise Component', () => {
 
         render(
             <MemoryRouter>
-                <Exercise {...mockProps} ref={ref} />
+                <Exercise {...mockProps} hadMistake={true} ref={ref} />
             </MemoryRouter>
         );
 
@@ -161,6 +159,21 @@ describe('Exercise Component', () => {
         // 6. Optional: If clicking "add" makes the button disappear or 
         // changes the text, wait for that specific UI change too.
         // await waitForElementToBeRemoved(() => screen.queryByTestId('add-alternative-answer'));
+    });
+
+    it('confirms revealing the answer when the separate hadMistake flag is false', async () => {
+        render(
+            <MemoryRouter>
+                <Exercise {...mockProps} hadMistake={false} />
+            </MemoryRouter>
+        );
+
+        const revealBtn = await screen.findByTestId('reveal-answer');
+        await act(async () => {
+            fireEvent.click(revealBtn);
+        });
+
+        expect(await screen.findByText("You haven't even guessed once!")).toBeTruthy();
     });
 
     it('wraps imperative handle calls in act()', async () => {

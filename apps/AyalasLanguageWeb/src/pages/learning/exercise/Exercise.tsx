@@ -25,6 +25,7 @@ export interface ExerciseHandle {
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
+    hadMistake: boolean;
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
@@ -37,7 +38,7 @@ type Props = {
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, hadMistake, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -138,7 +139,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
         }
 
         if (newValue) {
-            if (exerciseInfo && !exerciseInfo.hadMistake) {
+            if (!hadMistake) {
                 confirmRevealAnswer(FinalizeRevealAnswer);
             }
             else {
