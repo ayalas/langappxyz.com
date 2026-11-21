@@ -25,7 +25,8 @@ COPY apps/ayalaslanguageapp/package.json ./apps/ayalaslanguageapp/
 
 # 4. Install frontend dependencies
 ENV CI=true
-RUN pnpm install --frozen-lockfile
+ENV NODE_OPTIONS="--dns-result-order=ipv4first"
+RUN pnpm install --frozen-lockfile --network-concurrency=4
 
 # ---------------------------------------------------
 # .NET Restore
