@@ -57,6 +57,7 @@ describe('Exercise Component', () => {
         data: JSON.stringify(dataObj),
         sentenceElements: ['Hello'],
         answers: ['Bonjour'],
+        hadMistake: false,
         access: AUTHOR_ACCESS.CAN_EDIT,
         ownershipType: OWNERSHIP_TYPE.PUBLIC
     };
@@ -70,7 +71,10 @@ describe('Exercise Component', () => {
         restartLesson: vi.fn(),
         learningPathId: 1,
         practiseMistakesInitialValue: false,
-        addMistake: vi.fn().mockResolvedValue(undefined),
+        addMistake: vi.fn(async (exerciseId: number) => {
+            expect(exerciseId).toBe(101);
+            info.hadMistake = true;
+        }),
         onPractiseMistakesChange: vi.fn(),
         page: 1,
         ref: { current: null },
@@ -87,6 +91,7 @@ describe('Exercise Component', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        info.hadMistake = false;
         (useOutletContext as any).mockReturnValue({ user: mockUser });
     });
 
@@ -113,6 +118,10 @@ describe('Exercise Component', () => {
         const checkBtn = await screen.findByTestId('check-my-answers');
         await act(async () => {
             await user.click(checkBtn);
+        });
+
+        await waitFor(() => {
+            expect(mockProps.addMistake).toHaveBeenCalledWith(101);
         });
 
         await act(async () => {
