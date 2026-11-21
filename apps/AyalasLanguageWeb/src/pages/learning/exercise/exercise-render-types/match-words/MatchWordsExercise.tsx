@@ -19,7 +19,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
   const [column2Selected, setColumn2Selected] = useState<MatchSelection | null>(null);
 
   function checkAnswer(column1: MatchSelection, column2: MatchSelection) {
-    if (column1.matchingValue === column2.itemValue) {
+    if (column1.matchingValue === column2.itemValue || column2.matchingValue === column1.itemValue) {
       return true;
     } else {
       addMistake(exerciseInfo.exerciseId);

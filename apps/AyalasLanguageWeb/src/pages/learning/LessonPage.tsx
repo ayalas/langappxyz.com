@@ -64,7 +64,8 @@ export function LessonPage() {
         exerciseObject: dataObj,
         sentenceElements,
         answers,
-        index
+        index,
+        hadMistake: false
       });
     } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasExtraOptions) {
       const separator = EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].ExtraOptionsSeparator;
@@ -82,7 +83,8 @@ export function LessonPage() {
         sentenceElements: [firstData],
         answers: tempAnswers,
         extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
-        index
+        index,
+        hadMistake: false
       });
     } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
       const sentenceElements = (firstData || '').split(',');
@@ -99,7 +101,8 @@ export function LessonPage() {
         exerciseObject: dataObj,
         sentenceElements,
         answers,
-        index
+        index,
+        hadMistake: false
       });
     }
     else { //all other types
@@ -108,7 +111,8 @@ export function LessonPage() {
         exerciseObject: dataObj,
         sentenceElements: [firstData],
         answers: [secondData],
-        index
+        index,
+        hadMistake: false
       });
     }
 
@@ -129,6 +133,7 @@ export function LessonPage() {
 
   const addMistake = async function (exerciseId: number) {
     try {
+      currentExercise && setCurrentExercise({ ...currentExercise, hadMistake: true });
       await axios.post('/api/learning/mistake', { exerciseId });
     } catch (err: unknown) {
       errorHandler(err, setError);

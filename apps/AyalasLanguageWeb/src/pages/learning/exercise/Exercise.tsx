@@ -11,16 +11,16 @@ import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic'
 import { type ExtendedExerciseInfo, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { AITtsRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
 export interface ExerciseHandle {
-  setFocus: () => void;
-  checkAnswer: () => boolean;
-  getCurrentAnswer: () => string;
+    setFocus: () => void;
+    checkAnswer: () => boolean;
+    getCurrentAnswer: () => string;
 }
 
 type Props = {
@@ -28,7 +28,7 @@ type Props = {
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
-    saveProgress: (routeToHome?:boolean) => void;
+    saveProgress: (routeToHome?: boolean) => void;
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
@@ -47,9 +47,11 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const navigate = useNavigate();
     const isAtStartOfLesson = (exerciseInfo.index ?? 0) === 0 && page === 1;
 
-    const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
+    const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
+        learningPathId: exerciseInfo.learningPathId,
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue,
-        onChange: onPractiseMistakesChange});
+        onChange: onPractiseMistakesChange
+    });
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -69,15 +71,15 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                                 language: pollyObject.language
                             };
 
-                            const result = await axios.post('/api/ai/edge/tts', options,{
-                                responseType: 'blob' 
+                            const result = await axios.post('/api/ai/edge/tts', options, {
+                                responseType: 'blob'
                             });
                             const audioBlob = result.data;
                             const audioUrl = URL.createObjectURL(audioBlob);
 
                             // 3. Create an Audio object and play it
                             const audio = new Audio(audioUrl);
-                            
+
                             // Clean up memory after the audio finishes playing
                             audio.onended = () => {
                                 URL.revokeObjectURL(audioUrl);
@@ -94,15 +96,57 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
         }
     }
 
+    const confirmRevealAnswer = async function (callback: () => void) {
+
+        const toastId = toast("You haven't even guessed once!", {
+            description: 'Are you sure you wish to reveal the answer?',
+            action: {
+                label: 'Yes, reveal the answer',
+                onClick: async (e) => {
+                    e.preventDefault();
+
+                    toast.dismiss(toastId);
+
+                    callback();
+                },
+            },
+            cancel: {
+                label: 'No, let me guess first',
+                onClick: (e) => {
+                    e.preventDefault();
+                    toast.dismiss(toastId);
+                }
+            },
+            classNames: {
+                toast: 'my-confirm-toast',
+                description: 'my-confirm-description', // Optional: styling the description
+                actionButton: 'my-action-btn', // Makes the button full width at the bottom
+                cancelButton: 'my-cancel-btn',
+            },
+        });
+    }
+
     const toggleAnswer = function () {
         const newValue = !displayAnswer;
-        setDisplayAnswer(newValue);
 
-        if (newValue) {
+        function FinalizeRevealAnswer() {
+            setDisplayAnswer(newValue);
             if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer) {
                 playTargetText();
             }
             addMistake(exerciseInfo.exerciseId);
+        }
+
+        if (newValue) {
+            if (exerciseInfo && !exerciseInfo.hadMistake) {
+                confirmRevealAnswer(FinalizeRevealAnswer);
+            }
+            else {
+                FinalizeRevealAnswer();
+            }
+        }
+        else {
+            setDisplayAnswer(newValue);
         }
     }
 
@@ -118,7 +162,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
             let desc = EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].GenerationInfo?.instruction ?? '';
-            desc =  desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
+            desc = desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
                 .replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '')
 
             if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasMultiBucketAnswers) {
@@ -191,7 +235,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <Toaster position="top-center" richColors />
-            
+
             <div className="exercise-body-container">
                 <div className="form-row">
                     <label className="form-label-row">{ExerciseTypeInstruction()}</label>
@@ -215,17 +259,17 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} 
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText}
                         setHasAnswer={setHasAnswer} />
                 )) || (
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText}
                             setHasAnswer={setHasAnswer} />
                     ))}
             </div>
-            
+
             <div className="buttons-container">
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
@@ -261,29 +305,29 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     {
                         dataTestId: "edit-lesson",
                         children: <><FilePenLine />&nbsp;Edit lesson</>,
-                        onClick: () => {  
-                                saveProgress(false);
-                                navigate(`/author/path/${exerciseInfo.learningPathId}`);
-                            }
+                        onClick: () => {
+                            saveProgress(false);
+                            navigate(`/author/path/${exerciseInfo.learningPathId}`);
+                        }
                     },
                     {
                         dataTestId: "edit-exercise",
                         children: <><FilePenLine />&nbsp;Edit Exercise</>,
-                        onClick: () => {  
-                                saveProgress(false);
-                                navigate(`/author/exercise/${exerciseInfo.exerciseId}`);
-                            },
+                        onClick: () => {
+                            saveProgress(false);
+                            navigate(`/author/exercise/${exerciseInfo.exerciseId}`);
+                        },
                         isVisible: exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT
                     },
                     {
                         dataTestId: "exit-nosave",
                         children: <><SaveOff />&nbsp;Exit without Save</>,
-                        onClick: () => { 
-                                navigate('/home');
-                            }
+                        onClick: () => {
+                            navigate('/home');
+                        }
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
-                
+
             </div>
             <div className="exercise-footer">
 
@@ -294,7 +338,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
-                        <div className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback": "" }`}>
+                        <div className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback" : ""}`}>
                             <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
                         </div>
                     )

@@ -1,4 +1,5 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import { TouchableOpacity, Text, View, Alert, Platform } from 'react-native';
 import { Ban, Eye, ListChecks, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine, SaveOff }
     from 'lucide-react-native';
 import { AudioStatus, createAudioPlayer } from 'expo-audio';
@@ -16,7 +17,7 @@ import { type ExtendedExerciseInfo, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '
 import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/ActionsMenuComponent';
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
-import { TouchableOpacity, Text, View } from 'react-native';
+
 import useTextStyles from '@/lib/useTextStyles';
 import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
 import { AITtsRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
@@ -34,7 +35,7 @@ type Props = {
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
-    saveProgress: (routeToHome?:boolean) => void;
+    saveProgress: (routeToHome?: boolean) => void;
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
@@ -109,15 +110,58 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
         }
     }
 
+    const confirmRevealAnswer = function (onConfirm: () => void) {
+
+        const title = "You haven't even guessed once!";
+        const message = "Are you sure you wish to reveal the answer?";
+
+        if (Platform.OS === 'web') {
+            const result = window.confirm(`${title}\n\n${message}`);
+            if (result) {
+                onConfirm();
+            }
+        }
+        else {
+            return Alert.alert(
+                title,
+                message,
+                [
+                    {
+                        text: 'No, let me guess first',
+                        style: "cancel"
+                    },
+                    {
+                        text: 'Yes, reveal the answer',
+                        onPress: onConfirm,
+                        style: "destructive"
+                    },
+                ]
+            );
+        }
+    }
+
+
     const toggleAnswer = function () {
         const newValue = !displayAnswer;
-        setDisplayAnswer(newValue);
 
-        if (newValue) {
+        function FinalizeRevealAnswer() {
+            setDisplayAnswer(newValue);
             if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer) {
                 playTargetText();
             }
             addMistake(exerciseInfo.exerciseId);
+        }
+
+        if (newValue) {
+            if (exerciseInfo && !exerciseInfo.hadMistake) {
+                confirmRevealAnswer(FinalizeRevealAnswer);
+            }
+            else {
+                FinalizeRevealAnswer();
+            }
+        }
+        else {
+            setDisplayAnswer(newValue);
         }
     }
 
@@ -133,7 +177,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
             let desc = EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].GenerationInfo?.instruction ?? '';
-            desc =  desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
+            desc = desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
                 .replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '')
 
             if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasMultiBucketAnswers) {
@@ -223,7 +267,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText}
                         setHasAnswer={setHasAnswer} />
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].IsMatchingType && (
                     <MatchWordsExercise
@@ -232,13 +276,13 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} 
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText}
                         setHasAnswer={setHasAnswer} />
                 )) || (
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText}
                             setHasAnswer={setHasAnswer} />
                     ))}
             </View>
@@ -284,7 +328,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         {
                             dataTestId: "edit-lesson",
                             itemText: "Edit lesson",
-                            onClick: () => {  
+                            onClick: () => {
                                 saveProgress(false);
                                 router.replace(`/author/path/${exerciseInfo.learningPathId}`);
 
@@ -294,7 +338,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         {
                             dataTestId: "edit-exercise",
                             itemText: "Edit Exercise",
-                            onClick: () => {  
+                            onClick: () => {
                                 saveProgress(false);
                                 router.replace(`/author/exercise/${exerciseInfo.exerciseId}`);
 
@@ -312,7 +356,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         }
                     ] as ActionsMenuItem[]} anchorTitle="More" />
                 </View>
-                
+
             </View>
             <View className="exercise-footer">
 
@@ -323,7 +367,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
-                        <View className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback": "flex-1" } bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
+                        <View className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback" : "flex-1"} bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
                             <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, { color: 'white', backgroundColor: COLOR_PLAY }]}> Check</Text></View></TouchableOpacity>
                         </View>
                     )
